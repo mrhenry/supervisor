@@ -25,9 +25,9 @@
   /**
    * Bind triggers for check()
    * For now, only works on resize
-   * 
+   *
    * @todo - Custom triggers
-   * 
+   *
    * @return {void}
    */
   Supervisor.prototype.bind = function () {
@@ -42,7 +42,7 @@
    *
    * @param  {string} moduleName Path to the module (require({{moduleName}}).init etc etc)
    * @param  {function} match    Function that returns a boolean whether we want the module initiated or not
-   * @param  {array} states      Array of functions that return booleans, the first truthy key is the current state 
+   * @param  {array} states      Array of functions that return booleans, the first truthy key is the current state
    */
   Supervisor.prototype.manage = function (moduleName, match, states, hooks) {
     if (!!this.modules[moduleName]) {
@@ -53,7 +53,7 @@
     hooks = (typeof hooks === 'object') ? hooks : { init: this.initModule, destroy: this.destroyModule, update: this.updateModule };
 
     this.modules[moduleName] = {
-      instance: null,
+      initiated: false,
       match: match,
       states: states,
       state: -1,
@@ -91,7 +91,7 @@
         var module = this.modules[moduleName];
 
         if (module.match()) {
-          if (!module.instance) {
+          if (!module.initiated) {
             // We should have the module and it's not initiated yet, init
             this.checkState(module);
             module.hooks.init(moduleName, module);
@@ -99,7 +99,7 @@
             // State changed, update
             module.hooks.update(moduleName, module);
           }
-        } else if (!!module.instance) {
+        } else if (!!module.initiated) {
           // We shouldn't have the module but we do, destroy
           module.hooks.destroy(moduleName, module);
         }
@@ -143,7 +143,8 @@
     if (!!require(moduleName).init) {
       // Also update current state
       // to pass on to the initialiser
-      module.instance = require(moduleName).init({ state: module.state });
+      require(moduleName).init({ state: module.state });
+      module.initiated = true;
     }
   };
 
@@ -158,7 +159,7 @@
       require(moduleName).destroy();
     }
 
-    module.instance = null;
+    module.initiated = false;
   };
 
   /**
