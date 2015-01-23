@@ -144,8 +144,9 @@
       // Also update current state
       // to pass on to the initialiser
       require(moduleName).init({ state: module.state });
-      module.initiated = true;
     }
+
+    module.initiated = true;
   };
 
   /**
