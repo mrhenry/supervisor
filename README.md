@@ -59,15 +59,14 @@ supervisor.manage(
   // Hooks default to exports calls (see source code)
   {
     init: function (moduleName, module) {
-      // module.instance is provided to store your module instance
-      module.instance = new ColorChanger();
-    },
+      // Set up your module
+      new ColorChanger();
+      },
     destroy: function (moduleName, module) {
-      module.instance.destroy();
-      module.instance = null; // This line is important for good init() and destroy() behaviour
+      // Destroy your module
     },
     update: function (moduleName, module) {
-      module.instance.update(module.state);
+      // Change your module, according to module.state
     }
   }
 );
